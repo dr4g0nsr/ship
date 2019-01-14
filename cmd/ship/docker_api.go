@@ -8,10 +8,18 @@ import(
 	"io"
 	"os"
 )
+const docker_version = "1.38"	// Docker 18.06
+
+func docker_version_support() string {
+	return docker_version;
+}
 
 func docker_do() {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
+
+	dockerVersion := docker_version_support()
+
+	cli, err := client.NewClientWithOpts(client.WithVersion(dockerVersion))
 	if err != nil {
 		panic(err)
 	}
