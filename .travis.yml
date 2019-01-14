@@ -1,0 +1,9 @@
+language: go
+services:
+  - docker
+script:
+- make build
+- test -f bin/amd64/ship
+- make container
+- docker images | grep dr4g0nsr/ship-amd64
+- make test
