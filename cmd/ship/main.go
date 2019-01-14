@@ -1,13 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"log"
 	"os"
-	"os/exec"
-
-	"strings"
 )
 
 func printMessage(message string) {
@@ -18,20 +13,9 @@ func help() {
 	printMessage("Usage:")
 	printMessage("ship (cmd) [options]")
 	printMessage("")
-	printMessage("ship init              Initializes everything")
-	printMessage("ship deploy (template) Deploy template")
-}
-
-func execCommand() {
-	cmd := exec.Command("tr", "a-z", "A-Z")
-	cmd.Stdin = strings.NewReader("some input")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("in all caps: %q\n", out.String())
+	printMessage("ship init              Initializes everything - install docker and prepare compose")
+	printMessage("ship deploy (template) Deploy template from list of templates")
+	printMessage("ship list [template]   List templates, match template name")
 }
 
 func args() {
@@ -50,10 +34,14 @@ func args() {
 	case "deploy":
 		cmd_deploy();
 		break;
+	case "list":
+		cmd_list();
+		break;
 	default:
 	}
 }
 
 func main() {
 	args()
+	docker_do()
 }
