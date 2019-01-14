@@ -1,8 +1,10 @@
 # The binary to build (just the basename).
 BIN := ship
+DOCKERBIN := shipyard
 
 # This repo's root import path (under GOPATH).
-PKG := github.com/dr4g0nsr/go-build-template
+#PKG := github.com/dr4g0nsr/go-build-template
+PKG := ship
 
 # Where to push the docker image.
 REGISTRY ?= dr4g0nsr
@@ -66,24 +68,8 @@ build: bin/$(ARCH)/$(BIN)
 
 bin/$(ARCH)/$(BIN): build-dirs
 	@echo "building: $@"
-	@docker run                                                             \
-	    -ti                                                                 \
-	    --rm                                                                \
-	    -u $$(id -u):$$(id -g)                                              \
-	    -v "$$(pwd)/.go:/go"                                                \
-	    -v "$$(pwd):/go/src/$(PKG)"                                         \
-	    -v "$$(pwd)/bin/$(ARCH):/go/bin"                                    \
-	    -v "$$(pwd)/bin/$(ARCH):/go/bin/$$(go env GOOS)_$(ARCH)"            \
-	    -v "$$(pwd)/.go/std/$(ARCH):/usr/local/go/pkg/linux_$(ARCH)_static" \
-	    -v "$$(pwd)/.go/cache:/.cache"                                      \
-	    -w /go/src/$(PKG)                                                   \
-	    $(BUILD_IMAGE)                                                      \
-	    /bin/sh -c "                                                        \
-	        ARCH=$(ARCH)                                                    \
-	        VERSION=$(VERSION)                                              \
-	        PKG=$(PKG)                                                      \
-	        ./build/build.sh                                                \
-	    "
+	go build -o bin/$(ARCH)/$(DOCKERBIN)
+	cd cmd/ship && go build -o ../../bin/$(ARCH)/$(BIN)
 
 # Example: make shell CMD="-c 'date > datefile'"
 shell: build-dirs
